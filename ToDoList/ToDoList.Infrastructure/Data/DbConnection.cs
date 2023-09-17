@@ -12,6 +12,8 @@ public class DbConnection : IDbConnection
     public DbConnection(IConfiguration configuration)
         => _configuration = configuration;
 
+    public DbConnection() { }
+
     public SqlConnection GetConnection()
         => new SqlConnection(_configuration.GetConnectionString(DEFAULT_CONNECTION));
 }
