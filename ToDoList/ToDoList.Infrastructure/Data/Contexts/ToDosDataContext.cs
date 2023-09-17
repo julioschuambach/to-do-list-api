@@ -184,4 +184,30 @@ public class ToDosDataContext
             }
         }
     }
+
+    public void Delete(Guid id)
+    {
+        using (var connection = _connection.GetConnection())
+        {
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+                    DELETE FROM [ToDos]
+                    WHERE [Id] = @Id";
+
+                command.Parameters.AddWithValue("@Id", id);
+
+                try
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
+        }
+    }
 }

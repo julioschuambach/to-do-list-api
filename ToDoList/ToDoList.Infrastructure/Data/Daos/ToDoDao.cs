@@ -30,4 +30,9 @@ public class ToDoDao
     {
         _context.Update(toDo, updateDto);
     }
+
+    public void Delete(Guid id)
+    {
+        _context.Delete(id);
+    }
 }

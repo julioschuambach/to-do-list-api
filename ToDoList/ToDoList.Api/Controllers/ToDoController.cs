@@ -82,5 +82,24 @@ public class ToDoController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
+
+    [HttpDelete("{id:guid}")]
+    public IActionResult Delete([FromRoute] Guid id)
+    {
+        try
+        {
+            ToDo? toDo = _toDoDao.SelectById(id);
+
+            if (toDo == null)
+                return StatusCode(404);
+
+            _toDoDao.Delete(id);
+            return StatusCode(200);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
 }
 
