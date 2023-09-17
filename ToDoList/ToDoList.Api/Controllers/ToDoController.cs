@@ -29,5 +29,36 @@ public class ToDoController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
+
+    [HttpGet("{id:guid}")]
+    public IActionResult GetById([FromRoute] Guid id)
+    {
+        try
+        {
+            ToDo? toDo = _toDoDao.SelectById(id);
+
+            if (toDo == null)
+                return StatusCode(404);
+
+            return StatusCode(200, toDo);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        try
+        {
+            return StatusCode(200, _toDoDao.SelectAll());
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
 }
 

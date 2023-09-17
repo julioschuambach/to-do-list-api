@@ -2,7 +2,7 @@
 
 public abstract class EntityBase
 {
-    public Guid Id { get; private set; }
+    public Guid Id { get; protected set; }
 
     public EntityBase()
     {

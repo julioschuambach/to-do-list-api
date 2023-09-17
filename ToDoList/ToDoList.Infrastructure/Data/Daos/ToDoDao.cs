@@ -14,4 +14,14 @@ public class ToDoDao
     {
         _context.Insert(toDo);
     }
+
+    public ToDo? SelectById(Guid id)
+    {
+        return _context.SelectById(id);
+    }
+
+    public IEnumerable<ToDo> SelectAll()
+    {
+        return _context.SelectAll();
+    }
 }

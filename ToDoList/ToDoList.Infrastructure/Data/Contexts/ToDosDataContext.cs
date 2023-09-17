@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using ToDoList.Common.Dtos.ToDoDtos;
 using ToDoList.Domain.Entities;
 using ToDoList.Infrastructure.Interfaces.Data;
 
@@ -47,5 +48,98 @@ public class ToDosDataContext
                 }
             }
         }
+    }
+
+    public ToDo? SelectById(Guid id)
+    {
+        ReadToDoDto readDto = new();
+
+        using (var connection = _connection.GetConnection())
+        {
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+                    SELECT [Id], [Description], [Done], [CreatedDate], [LastUpdatedDate], [CompletionDate], [ExpectedCompletionDate]
+                    FROM [ToDos]
+                    WHERE [Id] = @Id";
+
+                command.Parameters.AddWithValue("@Id", id);
+
+                try
+                {
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        readDto.Fill(
+                            (Guid)reader["Id"],
+                            (string)reader["Description"],
+                            (bool)reader["Done"],
+                            reader["ExpectedCompletionDate"] as DateTime?,
+                            reader["CompletionDate"] as DateTime?,
+                            (DateTime)reader["CreatedDate"],
+                            (DateTime)reader["LastUpdatedDate"]
+                            );
+                    }
+
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
+        }
+
+        if (readDto.Id == Guid.Empty)
+            return null;
+        else
+            return new ToDo(readDto);
+    }
+
+    public IEnumerable<ToDo> SelectAll()
+    {
+        List<ToDo> toDos = new();
+
+        using (var connection = _connection.GetConnection())
+        {
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = @"
+                    SELECT [Id], [Description], [Done], [CreatedDate], [LastUpdatedDate], [CompletionDate], [ExpectedCompletionDate]
+                    FROM [ToDos]";
+
+                try
+                {
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        ReadToDoDto readDto = new();
+                        readDto.Fill(
+                            (Guid)reader["Id"],
+                            (string)reader["Description"],
+                            (bool)reader["Done"],
+                            reader["ExpectedCompletionDate"] as DateTime?,
+                            reader["CompletionDate"] as DateTime?,
+                            (DateTime)reader["CreatedDate"],
+                            (DateTime)reader["LastUpdatedDate"]
+                            );
+
+                        toDos.Add(new ToDo(readDto));
+                    }
+
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
+        }
+
+        return toDos;
     }
 }

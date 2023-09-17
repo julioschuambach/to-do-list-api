@@ -22,6 +22,17 @@ public class ToDo : EntityBase
         LastUpdatedDate = DateTime.Now;
     }
 
+    public ToDo(ReadToDoDto readDto)
+    {
+        Id = readDto.Id;
+        Description = readDto.Description;
+        Done = false;
+        ExpectedCompletionDate = readDto.ExpectedCompletionDate;
+        CompletionDate = readDto.CompletionDate;
+        CreatedDate = readDto.CreatedDate;
+        LastUpdatedDate = readDto.LastUpdatedDate;
+    }
+
     public void MarkAsDone()
     {
         Done = true;
