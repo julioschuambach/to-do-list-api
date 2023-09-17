@@ -1,4 +1,5 @@
-﻿using ToDoList.Infrastructure.Data.Contexts;
+﻿using ToDoList.Domain.Entities;
+using ToDoList.Infrastructure.Data.Contexts;
 
 namespace ToDoList.Infrastructure.Data.Daos;
 
@@ -8,4 +9,9 @@ public class ToDoDao
 
     public ToDoDao(ToDosDataContext context)
         => _context = context;
+
+    public void Insert(ToDo toDo)
+    {
+        _context.Insert(toDo);
+    }
 }
