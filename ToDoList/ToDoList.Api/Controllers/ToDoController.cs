@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ToDoList.Api.Extensions;
+using ToDoList.Api.ViewModels;
 using ToDoList.Common.Dtos.ToDoDtos;
 using ToDoList.Domain.Entities;
 using ToDoList.Infrastructure.Data.Daos;
@@ -17,16 +19,17 @@ public class ToDoController : ControllerBase
     public IActionResult Create([FromBody] CreateToDoDto createDto)
     {
         if (!ModelState.IsValid)
-            return StatusCode(400, ModelState);
+            return StatusCode(400, new ResultViewModel<string>(ModelState.GetErrors()));
 
         try
         {
-            _toDoDao.Insert(new ToDo(createDto));
-            return StatusCode(201);
+            ToDo toDo = new(createDto);
+            _toDoDao.Insert(toDo);
+            return StatusCode(201, new ResultViewModel<ToDo?>(_toDoDao.SelectById(toDo.Id)));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, new ResultViewModel<string>(ex.Message));
         }
     }
 
@@ -38,13 +41,13 @@ public class ToDoController : ControllerBase
             ToDo? toDo = _toDoDao.SelectById(id);
 
             if (toDo == null)
-                return StatusCode(404);
+                return StatusCode(404, new ResultViewModel<string>("Not found an entity with the given id."));
 
-            return StatusCode(200, toDo);
+            return StatusCode(200, new ResultViewModel<ToDo>(toDo));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, new ResultViewModel<string>(ex.Message));
         }
     }
 
@@ -53,11 +56,11 @@ public class ToDoController : ControllerBase
     {
         try
         {
-            return StatusCode(200, _toDoDao.SelectAll());
+            return StatusCode(200, new ResultViewModel<IEnumerable<ToDo>>(_toDoDao.SelectAll()));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, new ResultViewModel<string>(ex.Message));
         }
     }
 
@@ -65,21 +68,21 @@ public class ToDoController : ControllerBase
     public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateToDoDto updateDto)
     {
         if (!ModelState.IsValid)
-            return StatusCode(400, ModelState);
+            return StatusCode(400, new ResultViewModel<string>(ModelState.GetErrors()));
 
         try
         {
             ToDo? toDo = _toDoDao.SelectById(id);
 
             if (toDo == null)
-                return StatusCode(404);
+                return StatusCode(404, new ResultViewModel<string>("Not found an entity with the given id."));
 
             _toDoDao.Update(toDo, updateDto);
-            return StatusCode(200, _toDoDao.SelectById(id));
+            return StatusCode(200, new ResultViewModel<ToDo?>(_toDoDao.SelectById(id)));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, new ResultViewModel<string>(ex.Message));
         }
     }
 
@@ -91,14 +94,14 @@ public class ToDoController : ControllerBase
             ToDo? toDo = _toDoDao.SelectById(id);
 
             if (toDo == null)
-                return StatusCode(404);
+                return StatusCode(404, new ResultViewModel<string>("Not found an entity with the given id."));
 
             _toDoDao.Delete(id);
-            return StatusCode(200);
+            return StatusCode(200, new ResultViewModel<ToDo>(toDo));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, new ResultViewModel<string>(ex.Message));
         }
     }
 }
