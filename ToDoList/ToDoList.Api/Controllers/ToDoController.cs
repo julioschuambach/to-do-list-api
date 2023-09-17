@@ -60,5 +60,27 @@ public class ToDoController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
+
+    [HttpPut("{id:guid}")]
+    public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateToDoDto updateDto)
+    {
+        if (!ModelState.IsValid)
+            return StatusCode(400, ModelState);
+
+        try
+        {
+            ToDo? toDo = _toDoDao.SelectById(id);
+
+            if (toDo == null)
+                return StatusCode(404);
+
+            _toDoDao.Update(toDo, updateDto);
+            return StatusCode(200, _toDoDao.SelectById(id));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
 }
 

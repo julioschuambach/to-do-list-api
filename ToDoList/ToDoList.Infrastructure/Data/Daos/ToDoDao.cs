@@ -1,4 +1,5 @@
-﻿using ToDoList.Domain.Entities;
+﻿using ToDoList.Common.Dtos.ToDoDtos;
+using ToDoList.Domain.Entities;
 using ToDoList.Infrastructure.Data.Contexts;
 
 namespace ToDoList.Infrastructure.Data.Daos;
@@ -23,5 +24,10 @@ public class ToDoDao
     public IEnumerable<ToDo> SelectAll()
     {
         return _context.SelectAll();
+    }
+
+    public void Update(ToDo toDo, UpdateToDoDto updateDto)
+    {
+        _context.Update(toDo, updateDto);
     }
 }

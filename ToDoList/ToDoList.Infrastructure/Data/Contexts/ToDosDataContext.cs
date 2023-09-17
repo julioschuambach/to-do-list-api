@@ -142,4 +142,46 @@ public class ToDosDataContext
 
         return toDos;
     }
+
+    public void Update(ToDo toDo, UpdateToDoDto updateDto)
+    {
+        using (var connection = _connection.GetConnection())
+        {
+            using (var command = connection.CreateCommand())
+            {
+                List<string> criterias = new();
+                if (toDo.Description != updateDto.Description) criterias.Add("[Description] = @Description");
+                if (toDo.Done != updateDto.Done) criterias.Add("[Done] = @Done");
+                if (toDo.ExpectedCompletionDate != updateDto.ExpectedCompletionDate) criterias.Add("[ExpectedCompletionDate] = @ExpectedCompletionDate");
+                if (toDo.CompletionDate != updateDto.CompletionDate) criterias.Add("[CompletionDate] = @CompletionDate");
+                criterias.Add("[LastUpdatedDate] = @LastUpdatedDate");
+
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("UPDATE [ToDos]");
+                sb.AppendLine("SET");
+                sb.AppendLine(string.Join(", ", criterias));
+                sb.AppendLine("WHERE [Id] = @Id");
+
+                command.CommandText = sb.ToString();
+
+                command.Parameters.AddWithValue("@Id", toDo.Id);
+                if (toDo.Description != updateDto.Description) command.Parameters.AddWithValue("@Description", updateDto.Description);
+                if (toDo.Done != updateDto.Done) command.Parameters.AddWithValue("@Done", updateDto.Done);
+                if (toDo.ExpectedCompletionDate != updateDto.ExpectedCompletionDate) command.Parameters.AddWithValue("@ExpectedCompletionDate", updateDto.ExpectedCompletionDate);
+                if (toDo.CompletionDate != updateDto.CompletionDate) command.Parameters.AddWithValue("@CompletionDate", updateDto.CompletionDate);
+                command.Parameters.AddWithValue("@LastUpdatedDate", DateTime.Now);
+
+                try
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
+        }
+    }
 }
