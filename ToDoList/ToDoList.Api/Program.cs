@@ -16,8 +16,19 @@ public class Program
         builder.Services.AddTransient<ToDosDataContext>();
         builder.Services.AddTransient<ToDoDao>();
 
+        builder.Services.AddCors(x =>
+        {
+            x.AddPolicy(
+                name: "TestsDuringDevelopment",
+                x => x.WithOrigins("*")
+                      .AllowAnyHeader()
+                      .AllowAnyOrigin()
+                      .AllowAnyMethod());
+        });
+
         var app = builder.Build();
         app.MapControllers();
+        app.UseCors("TestsDuringDevelopment");
         app.Run();
     }
 }
