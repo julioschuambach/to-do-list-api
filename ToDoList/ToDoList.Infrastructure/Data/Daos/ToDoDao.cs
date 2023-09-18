@@ -11,28 +11,28 @@ public class ToDoDao
     public ToDoDao(ToDosDataContext context)
         => _context = context;
 
-    public void Insert(ToDo toDo)
+    public async Task Insert(ToDo toDo)
     {
-        _context.Insert(toDo);
+        await _context.Insert(toDo);
     }
 
-    public ToDo? SelectById(Guid id)
+    public async Task<ToDo?> SelectById(Guid id)
     {
-        return _context.SelectById(id);
+        return await _context.SelectById(id);
     }
 
-    public IEnumerable<ToDo> SelectAll()
+    public async Task<IEnumerable<ToDo>> SelectAll()
     {
-        return _context.SelectAll();
+        return await _context.SelectAll();
     }
 
-    public void Update(ToDo toDo, UpdateToDoDto updateDto)
+    public async Task Update(ToDo toDo, UpdateToDoDto updateDto)
     {
-        _context.Update(toDo, updateDto);
+        await _context.Update(toDo, updateDto);
     }
 
-    public void Delete(Guid id)
+    public async Task Delete(Guid id)
     {
-        _context.Delete(id);
+        await _context.Delete(id);
     }
 }
