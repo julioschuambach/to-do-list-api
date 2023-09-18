@@ -12,7 +12,7 @@ public class ToDosDataContext
     public ToDosDataContext(IDbConnection connection)
         => _connection = connection;
 
-    public void Insert(ToDo toDo)
+    public async Task Insert(ToDo toDo)
     {
         using (var connection = _connection.GetConnection())
         {
@@ -38,9 +38,9 @@ public class ToDosDataContext
 
                 try
                 {
-                    connection.Open();
-                    command.ExecuteNonQuery();
-                    connection.Close();
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+                    await connection.CloseAsync();
                 }
                 catch (Exception ex)
                 {
@@ -50,7 +50,7 @@ public class ToDosDataContext
         }
     }
 
-    public ToDo? SelectById(Guid id)
+    public async Task<ToDo?> SelectById(Guid id)
     {
         ReadToDoDto readDto = new();
 
@@ -67,10 +67,10 @@ public class ToDosDataContext
 
                 try
                 {
-                    connection.Open();
-                    var reader = command.ExecuteReader();
+                    await connection.OpenAsync();
+                    var reader = await command.ExecuteReaderAsync();
 
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         readDto.Fill(
                             (Guid)reader["Id"],
@@ -83,7 +83,7 @@ public class ToDosDataContext
                             );
                     }
 
-                    connection.Close();
+                    await connection.CloseAsync();
                 }
                 catch (Exception ex)
                 {
@@ -98,7 +98,7 @@ public class ToDosDataContext
             return new ToDo(readDto);
     }
 
-    public IEnumerable<ToDo> SelectAll()
+    public async Task<IEnumerable<ToDo>> SelectAll()
     {
         List<ToDo> toDos = new();
 
@@ -112,10 +112,10 @@ public class ToDosDataContext
 
                 try
                 {
-                    connection.Open();
-                    var reader = command.ExecuteReader();
+                    await connection.OpenAsync();
+                    var reader = await command.ExecuteReaderAsync();
 
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         ReadToDoDto readDto = new();
                         readDto.Fill(
@@ -131,7 +131,7 @@ public class ToDosDataContext
                         toDos.Add(new ToDo(readDto));
                     }
 
-                    connection.Close();
+                    await connection.CloseAsync();
                 }
                 catch (Exception ex)
                 {
@@ -143,7 +143,7 @@ public class ToDosDataContext
         return toDos;
     }
 
-    public void Update(ToDo toDo, UpdateToDoDto updateDto)
+    public async Task Update(ToDo toDo, UpdateToDoDto updateDto)
     {
         using (var connection = _connection.GetConnection())
         {
@@ -173,9 +173,9 @@ public class ToDosDataContext
 
                 try
                 {
-                    connection.Open();
-                    command.ExecuteNonQuery();
-                    connection.Close();
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+                    await connection.CloseAsync();
                 }
                 catch (Exception ex)
                 {
@@ -185,7 +185,7 @@ public class ToDosDataContext
         }
     }
 
-    public void Delete(Guid id)
+    public async Task Delete(Guid id)
     {
         using (var connection = _connection.GetConnection())
         {
@@ -199,9 +199,9 @@ public class ToDosDataContext
 
                 try
                 {
-                    connection.Open();
-                    command.ExecuteNonQuery();
-                    connection.Close();
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+                    await connection.CloseAsync();
                 }
                 catch (Exception ex)
                 {
